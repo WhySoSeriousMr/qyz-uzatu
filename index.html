@@ -159,22 +159,28 @@ document.addEventListener('tildaform:aftersuccess', function() {
 }, { once: true });
 $(document).ready(function() {
     var whatsappNumber = '77071092000'; 
-    var $form = $('#rec1962820183').find('form');
+    var $block = $('#rec1962820183');
+    var $form = $block.find('form');
+    var $submitBtn = $form.find('button[type="submit"]');
 
-    // Полная блокировка Тильды
+    // 1. ПРЕВРАЩАЕМ КНОПКУ В ОБЫЧНУЮ (не сабмит)
+    // Это на 100% запретит Тильде отправлять данные на свои сервера
+    $submitBtn.attr('type', 'button'); 
+
+    // 2. УДАЛЯЕМ ВСЕ ЛИШНЕЕ
     $form.removeAttr('action').removeAttr('method').removeClass('js-form-proccess');
     $form.attr('onsubmit', 'return false;');
 
-    $form.on('submit', function(e) {
+    // 3. СВОЯ ЛОГИКА НА КЛИК ПО КНОПКЕ
+    $submitBtn.on('click', function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
-        // Берем имя из поля с name="name"
-        var name = $(this).find('input[name="name"]').val();
+        // Берем имя (ищем по атрибуту name="name")
+        var name = $form.find('input[name="name"]').val();
         
-        // Ищем выбранную радиокнопку (Тойға келесіз бе?)
-        // В Тильде у них может не быть name="attendance", поэтому ищем просто чекнутый радио в этой форме
-        var attendance = $(this).find('input[type="radio"]:checked').val();
+        // Берем ответ радиокнопки
+        var attendance = $form.find('input[type="radio"]:checked').val();
 
         if (!name || !attendance) {
             alert('Өтінеміз, барлық өрістерді толтырыңыз!');
@@ -187,10 +193,8 @@ $(document).ready(function() {
 
         var whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message);
         
-        // Используем location.href для надежности на iPhone/Android
+        // Переход в WhatsApp
         window.location.href = whatsappUrl;
-
-        return false;
     });
 });
 </script> 
