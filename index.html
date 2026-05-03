@@ -143,11 +143,6 @@ $("audio").on("ended", function() {$('.playbtnbg').show(400);});});
     enableAudioOnInteraction();
   });
 });
-document.addEventListener('tildaform:aftersuccess', function() {
-    setTimeout(function() {
-        window.location.href = "https://example.com";
-    }, 1500); // 1.5 секунды
-});
  window.addEventListener('click', function() {
     var audio = document.getElementById('myAudio'); // Убедитесь, что у вашего тега <audio> есть id='myAudio'
     if (audio.paused) {
@@ -158,44 +153,52 @@ document.addEventListener('tildaform:aftersuccess', function() {
     }
 }, { once: true });
 $(document).ready(function() {
-    var whatsappNumber = '77071092000'; 
+    var whatsappNumber = '77071092000';
     var $block = $('#rec1962820183');
-    var $form = $block.find('form');
-    var $submitBtn = $form.find('button[type="submit"]');
 
-    // 1. ПРЕВРАЩАЕМ КНОПКУ В ОБЫЧНУЮ (не сабмит)
-    // Это на 100% запретит Тильде отправлять данные на свои сервера
-    $submitBtn.attr('type', 'button'); 
+    // Ждём пока Тильда полностью отрисует форму
+    setTimeout(function() {
+        var $form = $block.find('.t-form, form').first();
+        var $submitBtn = $block.find('button[type="submit"], .t-submit');
 
-    // 2. УДАЛЯЕМ ВСЕ ЛИШНЕЕ
-    $form.removeAttr('action').removeAttr('method').removeClass('js-form-proccess');
-    $form.attr('onsubmit', 'return false;');
+        // Полностью заменяем кнопку на новую — без Тильдиных обработчиков
+        var $newBtn = $('<button type="button" class="t-submit">' + ($submitBtn.text() || 'Жіберу') + '</button>');
+        $newBtn.css({
+            background: $submitBtn.css('background-color') || '#0d0a03',
+            color: $submitBtn.css('color') || '#ffffff',
+            border: 'none',
+            borderRadius: '30px',
+            padding: '0 20px',
+            fontSize: '27px',
+            fontWeight: '600',
+            width: '160px',
+            height: '50px',
+            cursor: 'pointer',
+            display: 'block',
+            margin: '30px auto 0'
+        });
+        $submitBtn.replaceWith($newBtn);
 
-    // 3. СВОЯ ЛОГИКА НА КЛИК ПО КНОПКЕ
-    $submitBtn.on('click', function(e) {
-        e.preventDefault();
-        e.stopImmediatePropagation();
+        $newBtn.on('click', function(e) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
 
-        // Берем имя (ищем по атрибуту name="name")
-        var name = $form.find('input[name="name"]').val();
-        
-        // Берем ответ радиокнопки
-        var attendance = $form.find('input[type="radio"]:checked').val();
+            var name = $block.find('input[name="name"]').val() || '';
+            var attendance = $block.find('input[type="radio"]:checked').val() || '';
 
-        if (!name || !attendance) {
-            alert('Өтінеміз, барлық өрістерді толтырыңыз!');
-            return false;
-        }
+            if (!name.trim() || !attendance) {
+                alert('Өтінеміз, барлық өрістерді толтырыңыз!');
+                return false;
+            }
 
-        var message = "Сәлеметсіз бе! Тойға шақырту бойынша жауап:\n\n";
-        message += "*Есімі:* " + name + "\n";
-        message += "*Жауабы:* " + attendance;
+            var message = "Сәлеметсіз бе! Тойға шақырту бойынша жауап:\n\n";
+            message += "*Есімі:* " + name + "\n";
+            message += "*Жауабы:* " + attendance;
 
-        var whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message);
-        
-        // Переход в WhatsApp
-        window.location.href = whatsappUrl;
-    });
+            window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message), '_blank');
+        });
+
+    }, 1500); // Даём Тильде 1.5 секунды отрисоваться
 });
 </script> 
 
