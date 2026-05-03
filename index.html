@@ -158,25 +158,22 @@ document.addEventListener('tildaform:aftersuccess', function() {
     }
 }, { once: true });
 $(document).ready(function() {
-    // 1. ВАШ НОМЕР (без +)
     var whatsappNumber = '77071092000'; 
-
-    // Находим форму
     var $form = $('#rec1962820183').find('form');
 
-    // 2. УДАЛЯЕМ СВЯЗЬ С ТИЛЬДОЙ
-    // Убираем адрес отправки, чтобы данные не улетали на forms.tilda.fed
-    $form.removeAttr('action');
-    $form.removeAttr('method');
-    $form.attr('onsubmit', 'return false;'); // Блокируем стандартный запуск
-    $form.removeClass('js-form-proccess');   // Отключаем внутренние скрипты Тильды
+    // Полная блокировка Тильды
+    $form.removeAttr('action').removeAttr('method').removeClass('js-form-proccess');
+    $form.attr('onsubmit', 'return false;');
 
-    // 3. СВОЯ ЛОГИКА ОТПРАВКИ
     $form.on('submit', function(e) {
         e.preventDefault();
         e.stopImmediatePropagation();
 
+        // Берем имя из поля с name="name"
         var name = $(this).find('input[name="name"]').val();
+        
+        // Ищем выбранную радиокнопку (Тойға келесіз бе?)
+        // В Тильде у них может не быть name="attendance", поэтому ищем просто чекнутый радио в этой форме
         var attendance = $(this).find('input[type="radio"]:checked').val();
 
         if (!name || !attendance) {
@@ -190,7 +187,9 @@ $(document).ready(function() {
 
         var whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message);
         
-        window.open(whatsappUrl, '_blank');
+        // Используем location.href для надежности на iPhone/Android
+        window.location.href = whatsappUrl;
+
         return false;
     });
 });
