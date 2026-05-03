@@ -157,4 +157,46 @@ document.addEventListener('tildaform:aftersuccess', function() {
         document.querySelector('.tn-elem__1962820183175958040746487520').style.display = 'block'; // Показать Pause
     }
 }, { once: true });
-</script> <!-- nominify end --> </div> </div> </div> </div> </div>  </body> </html>
+</script> 
+ <script>
+$(document).ready(function() {
+    // 1. Укажите ваш номер телефона (без + и скобок)
+    var whatsappNumber = '77001234567'; 
+
+    // Находим форму внутри вашего блока (id rec1962820183)
+    var $form = $('#rec1962820183').find('form');
+
+    $form.off('submit'); // Отключаем стандартный обработчик Tilda
+
+    $form.on('submit', function(e) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+
+        // 2. Собираем данные из полей
+        // Имя (поле name)
+        var name = $(this).find('input[name="name"]').val();
+        
+        // Ответ (радиокнопки "Тойға келесіз бе?")
+        var attendance = $(this).find('input[type="radio"]:checked').val();
+
+        if (!name || !attendance) {
+            alert('Өтінеміз, барлық өрістерді толтырыңыз!');
+            return false;
+        }
+
+        // 3. Формируем текст сообщения
+        var message = "Сәлеметсіз бе! Тойға шақырту бойынша жауап:\n\n";
+        message += "*Есімі:* " + name + "\n";
+        message += "*Жауабы:* " + attendance;
+
+        // 4. Кодируем текст для ссылки
+        var encodedMessage = encodeURIComponent(message);
+        var whatsappUrl = 'https://wa.me/' + whatsappNumber + '?text=' + encodedMessage;
+
+        // 5. Переходим в WhatsApp
+        window.open(whatsappUrl, '_blank');
+
+        return false;
+    });
+});
+</script><!-- nominify end --> </div> </div> </div> </div> </div>  </body> </html>
