@@ -153,22 +153,18 @@ $("audio").on("ended", function() {$('.playbtnbg').show(400);});});
     }
 }, { once: true });
 $(document).ready(function() {
-    var whatsappNumber = '77071092000';
+    var APPS_SCRIPT_URL = 'ВСТАВЬТЕ_URL_ИЗ_ШАГА_1';
     var $block = $('#rec1962820183');
 
-    // Ждём пока Тильда полностью отрисует форму
     setTimeout(function() {
-        var $form = $block.find('.t-form, form').first();
         var $submitBtn = $block.find('button[type="submit"], .t-submit');
 
-        // Полностью заменяем кнопку на новую — без Тильдиных обработчиков
-        var $newBtn = $('<button type="button" class="t-submit">' + ($submitBtn.text() || 'Жіберу') + '</button>');
+        var $newBtn = $('<button type="button">' + ($submitBtn.text() || 'Жіберу') + '</button>');
         $newBtn.css({
-            background: $submitBtn.css('background-color') || '#0d0a03',
-            color: $submitBtn.css('color') || '#ffffff',
+            background: '#0d0a03',
+            color: '#ffffff',
             border: 'none',
             borderRadius: '30px',
-            padding: '0 20px',
             fontSize: '27px',
             fontWeight: '600',
             width: '160px',
@@ -191,14 +187,26 @@ $(document).ready(function() {
                 return false;
             }
 
-            var message = "Сәлеметсіз бе! Тойға шақырту бойынша жауап:\n\n";
-            message += "*Есімі:* " + name + "\n";
-            message += "*Жауабы:* " + attendance;
+            $newBtn.text('Жіберілуде...').prop('disabled', true);
 
-            window.open('https://wa.me/' + whatsappNumber + '?text=' + encodeURIComponent(message), '_blank');
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, attendance: attendance })
+            })
+            .then(function() {
+                $newBtn.text('Жіберілді ✓');
+                $block.find('input[name="name"]').val('');
+                $block.find('input[type="radio"]').prop('checked', false);
+            })
+            .catch(function() {
+                alert('Қате шықты, қайталап көріңіз.');
+                $newBtn.text('Жіберу').prop('disabled', false);
+            });
         });
 
-    }, 1500); // Даём Тильде 1.5 секунды отрисоваться
+    }, 1500);
 });
 </script> 
 
